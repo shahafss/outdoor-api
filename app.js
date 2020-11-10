@@ -1,8 +1,7 @@
 const express = require("express");
-
 const bodyParser = require("body-parser");
-
-const feedRoutes = require("./routes/feed");
+const functions = require("firebase-functions");
+// const admin = require("firebase-admin");
 
 const app = express();
 
@@ -18,6 +17,4 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feed", feedRoutes);
-
-app.listen("8080");
+exports.app = functions.https.onRequest(app);

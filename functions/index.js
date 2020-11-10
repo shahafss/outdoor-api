@@ -80,4 +80,17 @@ app.post("/api/create", (req, res) => {
   })();
 });
 
+app.delete("/api/delete/:room_id", (req, res) => {
+  (async () => {
+    try {
+      const document = db.collection("rooms").doc(req.params.room_id);
+      await document.delete();
+      return res.status(200).send("room deleted");
+    } catch (error) {
+      console.log("delete room error >> ", error);
+      return res.status(500).send(error);
+    }
+  })();
+});
+
 exports.app = functions.https.onRequest(app);

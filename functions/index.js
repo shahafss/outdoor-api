@@ -48,7 +48,7 @@ app.get("/api/rooms", (req, res) => {
 });
 
 app.get("/api/rooms/:room_id", (req, res) => {
-  console.log("getroom requ>>", req.params);
+  console.log("getroom request>>", req.params);
   (async () => {
     try {
       const document = db.collection("rooms").doc(req.params.room_id);
@@ -63,7 +63,7 @@ app.get("/api/rooms/:room_id", (req, res) => {
 });
 
 app.post("/api/create", (req, res) => {
-  console.log("request>> ", req.body);
+  console.log("create request>> ", req.body);
   const room = req.body;
   (async () => {
     try {
@@ -75,6 +75,18 @@ app.post("/api/create", (req, res) => {
         });
     } catch (error) {
       console.log(error);
+      return res.status(500).send(error);
+    }
+  })();
+});
+
+app.put("/api/update/:room_id", (req, res) => {
+  (async () => {
+    try {
+      const document = db.collection("rooms").doc(req.params.room_id);
+      await document.update(req.body);
+      return res.status(200).send("room updated");
+    } catch (error) {
       return res.status(500).send(error);
     }
   })();

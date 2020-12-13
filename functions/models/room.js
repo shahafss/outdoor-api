@@ -20,6 +20,7 @@ module.exports = class Room {
     this.joinedUsers = room.joinedUsers;
     this.messages = room.messages;
     this.admin = room.admin;
+    this.id = room.id || null;
   }
 
   save(callback) {
@@ -34,6 +35,20 @@ module.exports = class Room {
           });
       } catch (error) {
         console.log(error);
+        callback(error);
+      }
+    })();
+  }
+
+  update(callback) {
+    const self = JSON.stringify(this);
+
+    (async () => {
+      try {
+        const document = db.collection("rooms").doc(this.id);
+        await document.update(JSON.parse(self));
+        callback("room updated");
+      } catch (error) {
         callback(error);
       }
     })();

@@ -27,15 +27,11 @@ exports.getRooms = (req, res) => {
 };
 
 exports.updateRoom = (req, res) => {
-  (async () => {
-    try {
-      const document = db.collection("rooms").doc(req.params.room_id);
-      await document.update(req.body);
-      return res.status(200).send("room updated");
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  })();
+  const room = new Room(req.body);
+  room.id = req.body.id;
+  room.update((response) => {
+    return res.status(200).send(response);
+  });
 };
 
 exports.deleteRoom = (req, res) => {

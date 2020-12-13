@@ -1,6 +1,7 @@
-node_modules
-.firebaserc
-firebase.json
-functions/.eslintrc.json
-functions/firebase-debug.log
-functions/ui-debug.log
+node_modules/
+/.firebaserc
+/firebase.json
+/functions/.eslintrc.json
+/functions/firebase-debug.log
+/functions/ui-debug.log
+permissions.json

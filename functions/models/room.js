@@ -26,17 +26,15 @@ module.exports = class Room {
   save(callback) {
     const self = JSON.stringify(this);
     (async () => {
-      try {
-        await db
-          .collection("rooms")
-          .add(JSON.parse(self))
-          .then((docRef) => {
-            callback({ roomId: docRef.id });
-          });
-      } catch (error) {
-        console.log(error);
-        callback(error);
-      }
+      await db
+        .collection("rooms")
+        .add(JSON.parse(self))
+        .then((docRef) => {
+          return callback({ roomId: docRef.id });
+        })
+        .catch((err) => {
+          return callback({ error: err });
+        });
     })();
   }
 
@@ -44,36 +42,40 @@ module.exports = class Room {
     const self = JSON.stringify(this);
 
     (async () => {
-      try {
-        const document = db.collection("rooms").doc(this.id);
-        await document.update(JSON.parse(self));
-        callback("room updated");
-      } catch (error) {
-        callback(error);
-      }
+      const document = db.collection("rooms").doc(this.id);
+      await document
+        .update(JSON.parse(self))
+        .then((docRef) => {
+          return callback("room updated");
+        })
+        .catch((error) => {
+          return callback({ error: error });
+        });
     })();
   }
 
   static fetchCurrenRoom(roomId, callback) {
     (async () => {
-      try {
-        const document = db.collection("rooms").doc(roomId);
-        let item = await document.get();
-        let response = item.data();
-        callback({ room: response });
-      } catch (error) {
-        console.log("getRoom error >> ", error);
-        callback({ err: error });
-      }
+      const document = db.collection("rooms").doc(roomId);
+      let item = await document
+        .get()
+        .then((docRef) => {
+          let response = docRef.data();
+          return callback({ room: response });
+        })
+        .catch((error) => {
+          return callback({ error: error });
+        });
     })();
   }
 
   static fetchAllRooms(callback) {
     (async () => {
-      try {
-        let query = db.collection("rooms");
-        let tempRooms = [];
-        await query.get().then((querySnapshot) => {
+      let query = db.collection("rooms");
+      let tempRooms = [];
+      await query
+        .get()
+        .then((querySnapshot) => {
           let docs = querySnapshot.docs;
           for (let doc of docs) {
             const roomData = {
@@ -91,26 +93,28 @@ module.exports = class Room {
             };
             if (roomData.title !== undefined) tempRooms.push(roomData);
           }
+          tempRooms
+            .sort((a, b) => new Date(a.timestamp - b.timestamp))
+            .reverse();
+          return callback(tempRooms);
+        })
+        .catch((error) => {
+          return callback({ error: error });
         });
-        tempRooms.sort((a, b) => new Date(a.timestamp - b.timestamp)).reverse();
-        callback(tempRooms);
-      } catch (error) {
-        console.log("errrrr>>>>> ", error);
-        callback(error);
-      }
     })();
   }
 
   static delete(roomId, callback) {
     (async () => {
-      try {
-        const document = db.collection("rooms").doc(roomId);
-        await document.delete();
-        callback("room deleted");
-      } catch (error) {
-        console.log("delete room error >> ", error);
-        callback(error);
-      }
+      const document = db.collection("rooms").doc(roomId);
+      await document
+        .delete()
+        .then((docRef) => {
+          return callback({ docRef: "room deleted" });
+        })
+        .catch((error) => {
+          return callback({ error: error });
+        });
     })();
   }
 };

@@ -7,7 +7,9 @@ const db = admin.firestore();
 exports.createRoom = (req, res) => {
   const room = new Room(req.body);
   room.save((response) => {
-    return res.status(201).send(response);
+    if (response.error) return res.status(500).json(response);
+
+    return res.status(201).json(response);
   });
 };
 
